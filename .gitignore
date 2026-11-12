@@ -1,0 +1,9 @@
+/target/
+/app/
+/build/
+/dist/
+*.exe
+*.zip
+__pycache__/
+*.pyc
+.venv/
