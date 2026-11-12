@@ -1,6 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 mod platform;
 use eframe::egui::{self, Color32, RichText};
+use racedesk::audio::{import_sound, Audio};
 use racedesk::model::*;
 use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use std::{
@@ -118,6 +119,7 @@ struct App {
     uninstall_confirm: bool,
     initial_geometry_applied: bool,
     window_drag: Option<platform::WindowDrag>,
+    audio: Audio,
 }
 impl App {
     fn new(cc: &eframe::CreationContext<'_>) -> Self {
@@ -177,6 +179,7 @@ impl App {
             uninstall_confirm: false,
             initial_geometry_applied: false,
             window_drag: None,
+            audio: Audio::new(),
         };
         if std::env::args().any(|x| x == "--settings") {
             app.expanded = true;
@@ -351,14 +354,21 @@ impl App {
                     race.cars,
                     race.length
                 );
-                match self.notifier.show(hwnd, &title, &body, self.settings.sound) {
-                    Ok(()) => {
-                        let key = format!("{}:{start}", race.series_id);
-                        self.settings.delivered.insert(key.clone());
-                        self.settings.alert_once.remove(&key);
-                        self.last_notification = time;
-                    }
-                    Err(e) => self.error = e,
+                let key = format!("{}:{start}", race.series_id);
+                let sound_submitted = self.settings.sound
+                    && self.audio.play(
+                        self.settings.sound_file.clone(),
+                        self.settings.sound_volume,
+                        self.settings.sound_device.clone(),
+                    );
+                let banner = self.notifier.show(hwnd, &title, &body, false);
+                self.last_notification = time;
+                if banner.is_ok() || sound_submitted {
+                    self.settings.delivered.insert(key.clone());
+                    self.settings.alert_once.remove(&key);
+                }
+                if let Err(error) = banner {
+                    self.error = error;
                 }
             }
         }
@@ -370,7 +380,7 @@ impl App {
         });
         self.persist();
         let pointer = ctx.input(|i| i.pointer.latest_pos().map(|p| [p.x, p.y]));
-        let diagnostic = serde_json::json!({"desktop_attached":self.desktop.attached,"desktop_host":self.desktop.host as usize,"widget_hwnd":hwnd as usize,"expanded":self.expanded,"error":self.error,"races":self.data.races.len(),"updated":time,"pointer":pointer});
+        let diagnostic = serde_json::json!({"desktop_attached":self.desktop.attached,"desktop_host":self.desktop.host as usize,"widget_hwnd":hwnd as usize,"expanded":self.expanded,"error":self.error,"races":self.data.races.len(),"updated":time,"pointer":pointer,"sound_status":self.audio.status,"sounds_started":self.audio.plays_started,"sound_playing":self.audio.playing});
         let _ = std::fs::write(data_dir().join("status.json"), diagnostic.to_string());
         ctx.request_repaint_after(Duration::from_secs(1));
     }
@@ -623,7 +633,12 @@ impl App {
             }
         });
     }
-    fn preferences(&mut self, ui: &mut egui::Ui, hwnd: windows_sys::Win32::Foundation::HWND) {
+    fn preferences(
+        &mut self,
+        ui: &mut egui::Ui,
+        hwnd: windows_sys::Win32::Foundation::HWND,
+        frame: &eframe::Frame,
+    ) {
         ui.heading("Make it yours");
         ui.checkbox(
             &mut self.settings.desktop,
@@ -645,21 +660,140 @@ impl App {
         ui.add_space(12.);
         ui.heading("Race reminders");
         ui.checkbox(&mut self.settings.alerts_enabled, "Enable reminders");
-        ui.checkbox(&mut self.settings.sound, "Play notification sound");
+        ui.checkbox(&mut self.settings.sound, "Play reminder sound");
+        let default_output = format!(
+            "Windows default · {}",
+            self.audio.default_output.as_deref().unwrap_or("no device")
+        );
+        egui::ComboBox::from_id_salt("sound-output")
+            .selected_text(
+                self.settings
+                    .sound_device
+                    .as_deref()
+                    .unwrap_or(&default_output),
+            )
+            .width(480.)
+            .show_ui(ui, |ui| {
+                ui.selectable_value(&mut self.settings.sound_device, None, &default_output);
+                for output in &self.audio.outputs {
+                    ui.selectable_value(
+                        &mut self.settings.sound_device,
+                        Some(output.clone()),
+                        output,
+                    );
+                }
+            });
+        if ui.small_button("Refresh audio outputs").clicked() {
+            self.audio.refresh_outputs();
+        }
+        if ui
+            .add(
+                egui::Slider::new(&mut self.settings.sound_volume, 0..=100)
+                    .text("Sound volume (%)"),
+            )
+            .changed()
+        {
+            self.audio.set_volume(self.settings.sound_volume);
+        }
+        let sound_name = self
+            .settings
+            .sound_file
+            .as_ref()
+            .map(|p| {
+                format!(
+                    "Custom {} sound",
+                    p.extension()
+                        .unwrap_or_default()
+                        .to_string_lossy()
+                        .to_uppercase()
+                )
+            })
+            .unwrap_or_else(|| "Race Ready · three-note chime".into());
+        ui.label(sound_name);
+        ui.horizontal_wrapped(|ui| {
+            if ui.button("Choose custom sound…").clicked() {
+                if let Some(path) = rfd::FileDialog::new()
+                    .set_title("Choose a race reminder sound")
+                    .set_parent(frame)
+                    .add_filter("Audio", &["wav", "mp3", "ogg", "flac"])
+                    .pick_file()
+                {
+                    match import_sound(&path, &data_dir().join("sounds")) {
+                        Ok(imported) => {
+                            self.settings.sound_file = Some(imported);
+                            self.audio.status =
+                                "Custom sound copied into RaceDesk. Use Preview sound to try it."
+                                    .into();
+                        }
+                        Err(error) => self.audio.status = format!("Sound error: {error}"),
+                    }
+                }
+            }
+            if ui
+                .add_enabled(
+                    self.settings.sound_file.is_some(),
+                    egui::Button::new("Use Race Ready"),
+                )
+                .clicked()
+            {
+                self.settings.sound_file = None;
+                self.audio.stop();
+            }
+            if ui
+                .add_enabled(
+                    self.settings.sound_volume > 0,
+                    egui::Button::new("Preview sound"),
+                )
+                .clicked()
+            {
+                self.audio.play(
+                    self.settings.sound_file.clone(),
+                    self.settings.sound_volume,
+                    self.settings.sound_device.clone(),
+                );
+            }
+            if ui.button("Stop sound").clicked() {
+                self.audio.stop();
+            }
+        });
+        ui.label(RichText::new("Your file is copied into RaceDesk, so you can delete the original. Up to 20 MB; plays the first 30 seconds.").small().color(MUTED));
+        ui.label(
+            RichText::new(
+                "Plays through the selected audio output. Windows volume and mute still apply.",
+            )
+            .small()
+            .color(MUTED),
+        );
+        if !self.audio.status.is_empty() {
+            ui.label(RichText::new(&self.audio.status).small().color(
+                if self.audio.status.starts_with("Sound error:") {
+                    Color32::from_rgb(255, 183, 112)
+                } else {
+                    ACCENT
+                },
+            ));
+        }
         ui.add(
             egui::Slider::new(&mut self.settings.lead_minutes, 1..=120)
                 .text("minutes before the start"),
         );
         ui.label("Select “Remind this start” or “Every race” on a series card. Alerts continue regardless of your current filters.");
-        ui.label(RichText::new("RaceDesk must be running and Windows awake. Focus Assist and Windows notification settings can silence reminders.").small().color(MUTED));
+        ui.label(RichText::new("RaceDesk must be running and Windows awake. Focus Assist may hide banners; reminder audio plays independently.").small().color(MUTED));
         if ui.button("Send a test reminder").clicked() {
             if let Err(e) = self.notifier.show(
                 hwnd,
                 "RaceDesk test",
                 "Your race reminders are ready. Choose a race on the schedule.",
-                self.settings.sound,
+                false,
             ) {
                 self.error = e;
+            }
+            if self.settings.sound {
+                self.audio.play(
+                    self.settings.sound_file.clone(),
+                    self.settings.sound_volume,
+                    self.settings.sound_device.clone(),
+                );
             }
         }
         ui.add_space(10.);
@@ -716,6 +850,7 @@ impl App {
 }
 impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
+        self.audio.poll();
         let hwnd = match frame.window_handle().map(|h| h.as_raw()) {
             Ok(RawWindowHandle::Win32(h)) => h.hwnd.get() as windows_sys::Win32::Foundation::HWND,
             _ => return,
@@ -845,7 +980,7 @@ impl eframe::App for App {
                 } else if self.page == 2 {
                     self.content(ui);
                 } else {
-                    egui::ScrollArea::vertical().show(ui, |ui| self.preferences(ui, hwnd));
+                    egui::ScrollArea::vertical().show(ui, |ui| self.preferences(ui, hwnd, frame));
                 }
             });
         if !self.expanded {

@@ -1,5 +1,13 @@
 # Verification — 13 November 2026
 
+## Version 0.1.2 direct audio and custom reminders
+
+Seven core Rust tests plus four audio integration tests passed, as did strict Clippy and a release build. Audio tests cover a non-silent built-in chime, validated imports that survive deletion of the original file, rejected invalid imports, and migration/persistence of volume, sound and device preferences.
+
+The actual Settings Preview sound button opened a Windows audio session for RaceDesk. Session mute was false, session volume was 1.0, and its peak meter reached approximately 0.410 for the built-in sound. A test MP3 was selected through the native file picker, imported into the managed sounds directory, and its original was deleted. Previewing that managed MP3 reached approximately 0.389, including after a full app restart. The test selection was reset to the built-in Race Ready chime afterward. These checks verify digital audio output; physical speaker/headset audibility still depends on the user's routing and volume.
+
+The machine's Windows default output was VoiceMeeter Input, unmuted at 100%. No global audio settings were changed. The app now includes an output selector so users can choose physical speakers/headphones or virtual devices. Native notification sound is disabled to prevent duplicate audio; reminder audio is submitted independently of banner success. An output-device opening failure is shown in Settings, and an unavailable custom file falls back to the built-in chime.
+
 ## Version 0.1.1 branding
 
 The original mint racing flag was exported as SVG, PNG, 16–256 px ICO and embedded RGBA window pixels. The simplified primary SVG passed the logo-design asset audit without warnings. Seven Rust tests, five Python tests, strict Clippy and a Windows release build passed. PE inspection confirmed icon and icon-group resources. The installed executable reports version 0.1.1; its extracted Windows icon was visually inspected. Native installation created a desktop shortcut and updated the Start menu shortcut, both explicitly pointing to the installed branded ICO. The running window also exposes an icon handle. Version 0.1.1 preserves the existing schedule and preferences.

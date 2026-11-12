@@ -1,4 +1,4 @@
-#define AppVersion "0.1.1"
+#define AppVersion "0.1.2"
 [Setup]
 AppId=RaceDesk
 AppName=RaceDesk
@@ -34,6 +34,7 @@ Source: "..\app\RaceDesk.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\assets\racedesk.ico"; DestDir: "{app}\assets"; Flags: ignoreversion
 Source: "..\assets\racedesk-logo.svg"; DestDir: "{app}\assets"; Flags: ignoreversion
 Source: "..\assets\racedesk-logo.png"; DestDir: "{app}\assets"; Flags: ignoreversion
+Source: "..\assets\race-ready.wav"; DestDir: "{app}\assets"; Flags: ignoreversion
 Source: "..\app\collector\*"; DestDir: "{app}\collector"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\README.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\THIRD-PARTY-NOTICES.txt"; DestDir: "{app}"; Flags: ignoreversion

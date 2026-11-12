@@ -4,13 +4,13 @@
 
 A native Rust Windows desktop widget for the public iRacing Week Planner schedule, collected with Scrapling. Windows 10/11 x64. No iRacing login, browser runtime, administrator account or separately installed Python is required.
 
-**[Download the Windows installer](https://github.com/Salutatorian/RaceDesk/releases/latest/download/RaceDesk-Setup-0.1.1-x64.exe)** · [All releases](https://github.com/Salutatorian/RaceDesk/releases)
+**[Download the Windows installer](https://github.com/Salutatorian/RaceDesk/releases/latest/download/RaceDesk-Setup-0.1.2-x64.exe)** · [All releases](https://github.com/Salutatorian/RaceDesk/releases)
 
 ![RaceDesk live desktop widget showing upcoming iRacing races and reminder controls](docs/images/racedesk-example.png)
 
 ## Open or install
 
-- Download and double-click [**RaceDesk-Setup-0.1.1-x64.exe**](https://github.com/Salutatorian/RaceDesk/releases/latest/download/RaceDesk-Setup-0.1.1-x64.exe) for a per-user installation and a Start menu shortcut. After installation, you can delete the downloaded installer: the app runs independently from `%LOCALAPPDATA%\Programs\RaceDesk`.
+- Download and double-click [**RaceDesk-Setup-0.1.2-x64.exe**](https://github.com/Salutatorian/RaceDesk/releases/latest/download/RaceDesk-Setup-0.1.2-x64.exe) for a per-user installation and a Start menu shortcut. After installation, you can delete the downloaded installer: the app runs independently from `%LOCALAPPDATA%\Programs\RaceDesk`.
 - The installer includes a native Windows uninstaller. No administrator access or separate Python installation is needed.
 - For the older portable/source bundle, **Install.cmd** remains available as a development installation method.
 - Or double-click **Open RaceDesk.cmd** to run the portable copy. Keep the `app/collector` folder beside `app/RaceDesk.exe`.
@@ -30,9 +30,17 @@ Preferences save automatically as soon as you change them and survive app exit, 
 
 Choose **Remind this start** for the next displayed start, or **Every race** for all future starts of that series while RaceDesk runs. Set the lead time from 1–120 minutes in Settings. Default: 10 minutes. Series reminders continue even if filters hide that series. Clear all reminders in Settings when needed.
 
-Windows must be awake and RaceDesk running. Windows Focus Assist/Do Not Disturb and notification settings can suppress the sound or banner. The app does not wake the PC or send reminders after a race has started. After resume it recalculates upcoming races. Duplicate notification submissions are prevented across restart. Multiple simultaneous reminders are spaced by eight seconds so Windows does not immediately replace them.
+Windows must be awake and RaceDesk running. Windows Focus Assist/Do Not Disturb and notification settings can suppress banners; direct reminder audio plays separately and obeys the selected device's volume and mute settings. The app does not wake the PC or send reminders after a race has started. After resume it recalculates upcoming races. Duplicate notification submissions are prevented across restart. Multiple simultaneous reminders are spaced by eight seconds so Windows does not immediately replace them.
 
 Use **Send a test reminder** to check your Windows notification settings. Reminders are based on scheduled starts, not live session status or registration availability; confirm in iRacing before entering a race.
+
+### Custom reminder sounds
+
+Settings includes **Play reminder sound**, an audio output selector, a volume slider, **Choose custom sound…**, **Preview sound** and **Stop sound**. The built-in **Race Ready** chime plays three short original tones. Use **Use Race Ready** to restore it.
+
+Choose a WAV, MP3, OGG/Vorbis or FLAC file (up to 20 MB). RaceDesk validates and copies it into its saved data folder, so deleting or moving the original download does not break reminders. Playback is limited to the first 30 seconds. Your sound, output and volume choices survive shutdown.
+
+Reminder audio plays directly through the chosen device, independently of Windows notification sounds. Windows/device volume and app mute still apply. If your default output is a virtual mixer such as VoiceMeeter, choose a physical speaker/headset in the output selector when wanted. RaceDesk does not change Windows' global output or volume. A missing selected device produces a visible error; a missing custom file falls back to Race Ready.
 
 ## Startup, exit and removal
 
@@ -48,7 +56,7 @@ For a portable copy, turn off startup, quit RaceDesk and delete its downloaded f
 
 Source: [iRacing Week Planner](https://iracing-week-planner.tmo.lol/), by [tmoitie and contributors](https://github.com/tmoitie/iRacing-week-planner). Collector: [Scrapling](https://github.com/d4vinci/Scrapling).
 
-The Rust executable is approximately 5 MB. The bundled Python/Scrapling helper adds disk space but runs only during collection; no browser engine runs in the background. Collection runs on launch, every six hours and when requested. Source changes can break extraction; a failed refresh displays an error and keeps the last valid schedule. A warning appears when cached data is over 48 hours old. New season data depends on the source website being updated.
+The Rust executable is approximately 6.4 MB. The bundled Python/Scrapling helper adds disk space but runs only during collection; no browser engine runs in the background. Collection runs on launch, every six hours and when requested. Source changes can break extraction; a failed refresh displays an error and keeps the last valid schedule. A warning appears when cached data is over 48 hours old. New season data depends on the source website being updated.
 
 The widget uses Windows local time. UTC is used internally for scheduling. Planner season exceptions and per-week cars are preserved. Future weather/session cancellations and changes not yet published by the source cannot be predicted.
 
