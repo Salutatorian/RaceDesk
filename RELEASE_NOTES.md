@@ -1,4 +1,6 @@
-# RaceDesk 0.1.0
+# RaceDesk 0.1.1 — app icons and desktop branding
+
+The mint racing flag now appears in the Windows app executable, window/taskbar, installer, Start menu, desktop shortcut and GitHub README. The same mark is included as SVG, PNG and a multi-size ICO, with one-colour variants. A desktop shortcut is selected by default during installation.
 
 Live Windows desktop widget for the public iRacing Week Planner schedule.
 
@@ -8,7 +10,7 @@ Live Windows desktop widget for the public iRacing Week Planner schedule.
 - One-start or recurring series alerts with adjustable lead time.
 - Optional Windows startup and a native uninstaller.
 
-Download **RaceDesk-Setup-0.1.0-x64.exe**, run it, then delete the installer if desired. Windows 10/11 x64; no separate Python installation or administrator access is required.
+Download **RaceDesk-Setup-0.1.1-x64.exe**, run it, then delete the installer if desired. Existing preferences are preserved when upgrading. Windows 10/11 x64; no separate Python installation or administrator access is required.
 
 The installer is unsigned. Windows may display an unknown-publisher prompt. Keep RaceDesk running and Windows awake for reminders; Windows notification settings apply. Schedule accuracy depends on the source website.
 

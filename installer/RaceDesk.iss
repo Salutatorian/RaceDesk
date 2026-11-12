@@ -1,4 +1,4 @@
-#define AppVersion "0.1.0"
+#define AppVersion "0.1.1"
 [Setup]
 AppId=RaceDesk
 AppName=RaceDesk
@@ -17,6 +17,7 @@ OutputBaseFilename=RaceDesk-Setup-{#AppVersion}-x64
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
+SetupIconFile=..\assets\racedesk.ico
 UninstallDisplayIcon={app}\RaceDesk.exe
 CloseApplications=yes
 RestartApplications=no
@@ -27,17 +28,20 @@ VersionInfoDescription=RaceDesk Windows Installer
 VersionInfoProductName=RaceDesk
 VersionInfoProductVersion={#AppVersion}
 [Tasks]
-Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Shortcuts:"; Flags: unchecked
+Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Shortcuts:"
 [Files]
 Source: "..\app\RaceDesk.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\assets\racedesk.ico"; DestDir: "{app}\assets"; Flags: ignoreversion
+Source: "..\assets\racedesk-logo.svg"; DestDir: "{app}\assets"; Flags: ignoreversion
+Source: "..\assets\racedesk-logo.png"; DestDir: "{app}\assets"; Flags: ignoreversion
 Source: "..\app\collector\*"; DestDir: "{app}\collector"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\README.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\THIRD-PARTY-NOTICES.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Uninstall.ps1"; DestDir: "{app}"; Flags: ignoreversion
 [Icons]
-Name: "{userprograms}\RaceDesk"; Filename: "{app}\RaceDesk.exe"; WorkingDir: "{app}"
-Name: "{userdesktop}\RaceDesk"; Filename: "{app}\RaceDesk.exe"; Tasks: desktopicon
+Name: "{userprograms}\RaceDesk"; Filename: "{app}\RaceDesk.exe"; WorkingDir: "{app}"; IconFilename: "{app}\assets\racedesk.ico"
+Name: "{userdesktop}\RaceDesk"; Filename: "{app}\RaceDesk.exe"; Tasks: desktopicon; IconFilename: "{app}\assets\racedesk.ico"
 [Registry]
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Uninstall\RaceDesk"; Flags: deletekey
 Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueName: "RaceDesk"; ValueType: none; Flags: uninsdeletevalue

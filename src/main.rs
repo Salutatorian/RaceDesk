@@ -903,6 +903,11 @@ fn main() -> eframe::Result {
     ];
     let mut viewport = egui::ViewportBuilder::default()
         .with_title("RaceDesk")
+        .with_icon(std::sync::Arc::new(egui::IconData {
+            rgba: include_bytes!("../assets/racedesk-64.rgba").to_vec(),
+            width: 64,
+            height: 64,
+        }))
         .with_inner_size(if expanded { [900., 700.] } else { size })
         .with_min_inner_size([360., 350.])
         .with_decorations(expanded);

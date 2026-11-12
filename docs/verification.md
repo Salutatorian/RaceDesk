@@ -1,5 +1,9 @@
 # Verification — 13 November 2026
 
+## Version 0.1.1 branding
+
+The original mint racing flag was exported as SVG, PNG, 16–256 px ICO and embedded RGBA window pixels. The simplified primary SVG passed the logo-design asset audit without warnings. Seven Rust tests, five Python tests, strict Clippy and a Windows release build passed. PE inspection confirmed icon and icon-group resources. The installed executable reports version 0.1.1; its extracted Windows icon was visually inspected. Native installation created a desktop shortcut and updated the Start menu shortcut, both explicitly pointing to the installed branded ICO. The running window also exposes an icon handle. Version 0.1.1 preserves the existing schedule and preferences.
+
 ## Widget dragging and saved position
 
 After the user reported continued difficulty, the small title-only native drag control was replaced by a wide 42-pixel-tall bar labeled "Drag here to move", with a grab cursor and direct pointer-relative window positioning. Reordering below applications is suspended while interacting. Real mouse tests dragged the title by (150,60), blank header space by (-110,90), and the hint label by (60,-70), with the exact expected displacement in each case. A close/reopen preserved the final position. Seven Rust tests and strict Clippy passed, followed by a release build. The installed app and Downloads installer/source/checksums were replaced with this build.

@@ -1,6 +1,6 @@
 # Publishing RaceDesk on GitHub
 
-Upload **RaceDesk-Setup-0.1.0-x64.exe** as a GitHub Release asset. Users download and run that one file, then may delete it after installation. The installed app and uninstaller live independently in their LocalAppData folder.
+Upload **RaceDesk-Setup-0.1.1-x64.exe** as a GitHub Release asset. Users download and run that one file, then may delete it after installation. The installed app and uninstaller live independently in their LocalAppData folder.
 
 The companion SHA256 file lets users verify the download. This build is unsigned; Windows may display an unknown-publisher warning. Public signing requires a signing identity owned by the publisher.
 

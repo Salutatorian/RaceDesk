@@ -1,14 +1,16 @@
 # RaceDesk
 
+<img src="assets/racedesk-logo.svg" alt="RaceDesk mint racing flag logo" width="112" height="112">
+
 A native Rust Windows desktop widget for the public iRacing Week Planner schedule, collected with Scrapling. Windows 10/11 x64. No iRacing login, browser runtime, administrator account or separately installed Python is required.
 
-**[Download the Windows installer](https://github.com/Salutatorian/RaceDesk/releases/latest/download/RaceDesk-Setup-0.1.0-x64.exe)** · [All releases](https://github.com/Salutatorian/RaceDesk/releases)
+**[Download the Windows installer](https://github.com/Salutatorian/RaceDesk/releases/latest/download/RaceDesk-Setup-0.1.1-x64.exe)** · [All releases](https://github.com/Salutatorian/RaceDesk/releases)
 
 ![RaceDesk live desktop widget showing upcoming iRacing races and reminder controls](docs/images/racedesk-example.png)
 
 ## Open or install
 
-- Download and double-click [**RaceDesk-Setup-0.1.0-x64.exe**](https://github.com/Salutatorian/RaceDesk/releases/latest/download/RaceDesk-Setup-0.1.0-x64.exe) for a per-user installation and a Start menu shortcut. After installation, you can delete the downloaded installer: the app runs independently from `%LOCALAPPDATA%\Programs\RaceDesk`.
+- Download and double-click [**RaceDesk-Setup-0.1.1-x64.exe**](https://github.com/Salutatorian/RaceDesk/releases/latest/download/RaceDesk-Setup-0.1.1-x64.exe) for a per-user installation and a Start menu shortcut. After installation, you can delete the downloaded installer: the app runs independently from `%LOCALAPPDATA%\Programs\RaceDesk`.
 - The installer includes a native Windows uninstaller. No administrator access or separate Python installation is needed.
 - For the older portable/source bundle, **Install.cmd** remains available as a development installation method.
 - Or double-click **Open RaceDesk.cmd** to run the portable copy. Keep the `app/collector` folder beside `app/RaceDesk.exe`.

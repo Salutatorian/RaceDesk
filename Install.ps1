@@ -12,17 +12,20 @@ Copy-Item -LiteralPath (Join-Path $sourcePath 'collector') -Destination $install
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'Uninstall.ps1') -Destination $installPath -Force
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'README.md') -Destination $installPath -Force
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'THIRD-PARTY-NOTICES.txt') -Destination $installPath -Force
+New-Item -ItemType Directory -Force -Path (Join-Path $installPath 'assets') | Out-Null
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'assets\racedesk.ico') -Destination (Join-Path $installPath 'assets') -Force
 $shell = New-Object -ComObject WScript.Shell
 $shortcutPath = Join-Path ([Environment]::GetFolderPath('Programs')) 'RaceDesk.lnk'
 $shortcut = $shell.CreateShortcut($shortcutPath)
 $shortcut.TargetPath = Join-Path $installPath 'RaceDesk.exe'
 $shortcut.WorkingDirectory = $installPath
+$shortcut.IconLocation = (Join-Path $installPath 'assets\racedesk.ico') + ',0'
 $shortcut.Description = 'Your iRacing desktop schedule and race reminders'
 $shortcut.Save()
 $uninstallKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\RaceDesk'
 New-Item -Path $uninstallKey -Force | Out-Null
 New-ItemProperty -Path $uninstallKey -Name DisplayName -Value 'RaceDesk' -PropertyType String -Force | Out-Null
-New-ItemProperty -Path $uninstallKey -Name DisplayVersion -Value '0.1.0' -PropertyType String -Force | Out-Null
+New-ItemProperty -Path $uninstallKey -Name DisplayVersion -Value '0.1.1' -PropertyType String -Force | Out-Null
 New-ItemProperty -Path $uninstallKey -Name Publisher -Value 'RaceDesk local app' -PropertyType String -Force | Out-Null
 New-ItemProperty -Path $uninstallKey -Name InstallLocation -Value $installPath -PropertyType String -Force | Out-Null
 New-ItemProperty -Path $uninstallKey -Name DisplayIcon -Value (Join-Path $installPath 'RaceDesk.exe') -PropertyType String -Force | Out-Null
